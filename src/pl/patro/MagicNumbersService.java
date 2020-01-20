@@ -38,9 +38,7 @@ public class MagicNumbersService {
             return true;
         }
         return map.entrySet()
-                .stream()
-                .filter(x->fileName.toLowerCase().endsWith(x.getValue()))
-                .count()>0;
+                .stream().anyMatch(x -> fileName.toLowerCase().endsWith(x.getValue()));
     }
 
 }
