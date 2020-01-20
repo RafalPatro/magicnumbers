@@ -1,8 +1,5 @@
 package pl.patro;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.NoSuchFileException;
 import java.util.NoSuchElementException;
 
 public class Main {
