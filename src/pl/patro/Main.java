@@ -1,21 +1,21 @@
 package pl.patro;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.NoSuchElementException;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args)  {
 
-        String fileName = null;
-
-        try{
-            fileName = args[0];
-        } catch (ArrayIndexOutOfBoundsException e ){
-            System.out.println("type filename as argument");
-            System.exit(1);
+        if(args.length==0){
+            System.out.println("Type filename as argument");
+            return;
         }
+        String fileName = args[0];
 
-        FileCodes fileCodes = new FileCodes();
+        ExtensionInterface fileCodes = new FileCodes();
+
         fileCodes.addExtensionCode("FFD8FFDB","jpg");
         fileCodes.addExtensionCode("FFD8FFE000104A4649460001","jpg");
         fileCodes.addExtensionCode("FFD8FFEE","jpg");
@@ -25,12 +25,22 @@ public class Main {
         fileCodes.addExtensionCode("CAFEBABE","class");
 
 
-        MagicNumbersService magicNumbersService = new MagicNumbersService();
-
-        if(magicNumbersService.isSupportedExtension(fileName,fileCodes.getMagicNumbers())){
-            byte[] bytes = magicNumbersService.getFilesMagicNumbers(fileName,fileCodes.maxFileCodeLength);
-
-            String realExtension = magicNumbersService.decodeExtension(fileCodes.getMagicNumbers(),bytes);
+        if(fileCodes.isSupportedExtension(fileName)){
+            FileService fileService = new FileService(fileName);
+            byte[] bytes;
+            try {
+                bytes = fileService.getMagicNumbers(fileCodes.maxLengthOfCodedExtension());
+            } catch (FileNotFoundException e) {
+               System.out.println("Wrong filename");
+               return;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            } catch (EmptyFileException e) {
+                System.out.println("File is empty");
+                return;
+            }
+            String realExtension = fileCodes.decodeExtension(bytes);
 
             String[] splitFilename = fileName.split("\\.");
             if(realExtension.isEmpty() && fileName.toLowerCase().endsWith("txt")){

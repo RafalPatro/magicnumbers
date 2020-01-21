@@ -1,17 +1,19 @@
 package pl.patro;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-public class FileCodes {
+public class FileCodes implements ExtensionInterface {
 
-    int maxFileCodeLength=0;
+    private int maxFileCodeLength=0;
 
     private Map<byte[],String> extensionCodes = new HashMap<>();
 
-    void addExtensionCode(String key,String value){
+    public void addExtensionCode(String key, String value){
         if(key.length()> maxFileCodeLength){
-            maxFileCodeLength=key.length();
+            setMaxFileCodeLength(key.length());
         }
         byte[] data = new byte[key.length()/2];
         for(int i=0;i < key.length();i+=2) {
@@ -20,8 +22,31 @@ public class FileCodes {
         extensionCodes.put(data,value);
     }
 
-    public Map<byte[], String> getMagicNumbers() {
-        return extensionCodes;
+    public String decodeExtension(byte[] fileBytes){
+        return extensionCodes.entrySet().stream()
+                .filter(x-> Arrays.equals(fileBytes, 0,x.getKey().length,x.getKey(),0,x.getKey().length))
+                .map(x->x.getValue())
+                .collect(Collectors.joining());
     }
 
+    public  boolean isSupportedExtension(String fileName){
+        if(fileName.toLowerCase().endsWith("txt")){
+            return true;
+        }
+        return extensionCodes.entrySet()
+                .stream().anyMatch(x -> fileName.toLowerCase().endsWith(x.getValue()));
+    }
+
+    @Override
+    public int maxLengthOfCodedExtension() {
+        return getMaxFileCodeLength();
+    }
+
+    public int getMaxFileCodeLength() {
+        return maxFileCodeLength;
+    }
+
+    private void setMaxFileCodeLength(int maxFileCodeLength) {
+        this.maxFileCodeLength = maxFileCodeLength;
+    }
 }
