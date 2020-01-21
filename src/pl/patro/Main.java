@@ -32,12 +32,14 @@ public class Main {
 
             String realExtension = magicNumbersService.decodeExtension(fileCodes.getMagicNumbers(),bytes);
 
+            String[] splitFilename = fileName.split("\\.");
             if(realExtension.isEmpty() && fileName.toLowerCase().endsWith("txt")){
                 System.out.println("Its txt file");
+            } else if(realExtension.isEmpty()){
+                System.out.println("Extension is "+ splitFilename[splitFilename.length-1]+ ", while actually it's a txt");
             } else if(fileName.toLowerCase().endsWith(realExtension)){
                 System.out.println("Its "+realExtension+" file");
             } else {
-                String[] splitFilename = fileName.split("\\.");
                 System.out.println("Extension is "+ splitFilename[splitFilename.length-1]+ ", while actually it's a "+ realExtension);
             }
         }else{
